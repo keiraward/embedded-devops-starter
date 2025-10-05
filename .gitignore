@@ -1,0 +1,15 @@
+# Ignore build artifacts
+
+# Ignore build artifacts
+build/
+CMakeCache.txt
+CMakeFiles/
+*.o
+*.obj
+*.exe
+*.log
+*.out
+*.tmp
+*.user
+*.swp
+.DS_Store

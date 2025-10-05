@@ -14,6 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Clone Unity framework
+        run: |
+          mkdir -p third_party
+          git clone https://github.com/ThrowTheSwitch/Unity.git third_party/Unity
+
       - name: Install dependencies
         run: |
           sudo apt update

@@ -1,0 +1,29 @@
+name: Embedded DevOps CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ninja-build gcc git
+
+      - name: Configure project
+        run: cmake -S . -B build -G Ninja
+
+      - name: Build project
+        run: cmake --build build -j
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure

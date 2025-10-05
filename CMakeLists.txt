@@ -40,3 +40,14 @@ target_include_directories(test_logic PRIVATE
     third_party/Unity/src
 )
 add_test(NAME logic_test COMMAND test_logic)
+# ========== Unit Test Section ==========
+add_executable(test_math_utils tests/test_math_utils.c)
+target_include_directories(test_math_utils PRIVATE
+    include
+    third_party/Unity/src
+)
+target_sources(test_math_utils PRIVATE
+    src/math_utils.c
+    third_party/Unity/src/unity.c
+)
+add_test(NAME math_utils_test COMMAND test_math_utils)

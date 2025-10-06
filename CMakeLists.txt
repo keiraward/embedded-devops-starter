@@ -1,53 +1,28 @@
 cmake_minimum_required(VERSION 3.21)
-project(blinky C)
+project(embedded_devops C)
 set(CMAKE_C_STANDARD 11)
 
-# ---------- برنامه اصلی ----------
+# -------------------------------
+# Firmware Executable
+# -------------------------------
 add_executable(firmware
     src/main.c
     src/app.c
 )
 target_include_directories(firmware PRIVATE include)
-if (MINGW)
-  target_link_options(firmware PRIVATE -mconsole)
-  target_sources(firmware PRIVATE src/winentry.c)
-endif()
 
-# ---------- تست‌ها ----------
-include(CTest)
+# -------------------------------
+# Unit Test Executable (Unity)
+# -------------------------------
+add_executable(test_app
+    tests/test_app.c
+    src/app.c
+    third_party/Unity/src/unity.c
+)
+target_include_directories(test_app PRIVATE
+    include
+    third_party/Unity/src
+)
+
+add_test(NAME app_test COMMAND test_app)
 enable_testing()
-
-# تست ۱: عملیات ریاضی
-add_executable(test_math
-    tests/test_math.c
-    src/app.c
-    third_party/Unity/src/unity.c
-)
-target_include_directories(test_math PRIVATE
-    include
-    third_party/Unity/src
-)
-add_test(NAME math_test COMMAND test_math)
-
-# تست ۲: منطق
-add_executable(test_logic
-    tests/test_logic.c
-    src/app.c
-    third_party/Unity/src/unity.c
-)
-target_include_directories(test_logic PRIVATE
-    include
-    third_party/Unity/src
-)
-add_test(NAME logic_test COMMAND test_logic)
-# ========== Unit Test Section ==========
-add_executable(test_math_utils tests/test_math_utils.c)
-target_include_directories(test_math_utils PRIVATE
-    include
-    third_party/Unity/src
-)
-target_sources(test_math_utils PRIVATE
-    src/math_utils.c
-    third_party/Unity/src/unity.c
-)
-add_test(NAME math_utils_test COMMAND test_math_utils)

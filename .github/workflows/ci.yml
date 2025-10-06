@@ -13,12 +13,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Clone Unity framework
+        
+        - name: Clone Unity framework
         run: |
           mkdir -p third_party
-          git clone https://github.com/ThrowTheSwitch/Unity.git third_party/Unity
-
+          if [ ! -d "third_party/Unity" ]; then
+            git clone https://github.com/ThrowTheSwitch/Unity.git third_party/Unity
+          fi
       - name: Install dependencies
         run: |
           sudo apt update

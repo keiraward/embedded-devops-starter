@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build-and-test:
@@ -13,28 +12,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-        - name: Clone Unity framework
+
+      - name: Clone Unity framework
         run: |
           mkdir -p third_party
           if [ ! -d "third_party/Unity" ]; then
-            git clone https://github.com/ThrowTheSwitch/Unity.git third_party/Unityfi
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y cmake ninja-build gcc git
+            git clone https://github.com/ThrowTheSwitch/Unity.git third_party/Unity
+          fi
+
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc
 
       - name: Configure project
-        run: cmake -S . -B build -G Ninja
+        run: cmake -S . -B build -G "Ninja"
 
       - name: Build all targets
         run: cmake --build build -j
 
       - name: Run tests
-        run: ctest --test-dir build --output-on-failure
-
-      - name: Upload firmware artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware
-          path: build/firmware.exe
+        run: cd build && ctest --output-on-failure

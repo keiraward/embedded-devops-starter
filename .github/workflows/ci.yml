@@ -4,7 +4,8 @@ on:
   push:
     branches: [ main ]
   pull_request:
-
+    branches:
+      - main
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -12,6 +13,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      # Install clang-format
+      - name: Install clang-format
+        run: sudo apt-get install clang-format
+
+      # Format code
+      - name: Run clang-format
+        run: |
+          find . -iname "*.c" -o -iname "*.h" | xargs clang-format -i
+
 
       - name: Clone Unity framework
         run: |
@@ -31,3 +41,13 @@ jobs:
 
       - name: Run tests
         run: cd build && ctest --output-on-failure
+      # Install lcov
+      - name: Install lcov
+        run: sudo apt-get install lcov
+
+      # Generate coverage report
+      - name: Generate coverage report
+        run: |
+          lcov --capture --directory . --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/test/*' --output-file coverage.info
+          lcov --list coverage.info

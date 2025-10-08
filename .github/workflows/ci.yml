@@ -23,7 +23,7 @@ jobs:
 
       # 3️⃣ پیکربندی پروژه
       - name: Configure CMake project
-        run: cmake -S . -B build -G "Ninja"
+        run: cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DENABLE_CODE_COVERAGE=ON
 
       # 4️⃣ بیلد کردن همه تارگت‌ها
       - name: Build all targets
@@ -38,7 +38,7 @@ jobs:
         run: |
           cd build
           lcov --capture --directory . --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' 'tests/*' 'third_party/*' --output-file coverage.info
           lcov --list coverage.info
           genhtml coverage.info --output-directory coverage_html
 
@@ -47,7 +47,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: build/coverage_html
+          path: |
+            build/coverage_html
+            build/coverage.info
 
       # 8️⃣ بررسی فرمت کدها با clang-format
       - name: Check code formatting

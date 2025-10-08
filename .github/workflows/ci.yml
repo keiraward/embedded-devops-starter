@@ -19,15 +19,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y ninja-build lcov clang-format gcovr
+          sudo apt install -y ninja-build lcov clang-format gcovr gcc
 
       # 3️⃣ پیکربندی CMake با فلگ‌های پوشش تست
       - name: Configure CMake project
         run: |
           cmake -S . -B build -G "Ninja" \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_C_FLAGS="--coverage" \
-            -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+            -DCMAKE_C_COMPILER=gcc \
+            -DENABLE_CODE_COVERAGE=ON
 
       # 4️⃣ بیلد پروژه
       - name: Build all targets
@@ -40,12 +40,19 @@ jobs:
      # 6️⃣ محاسبه و خروجی پوشش تست (coverage)
       - name: Generate coverage report
         run: |
-           cd build
-           lcov --capture --directory . --output-file coverage.info
-            lcov --remove coverage.info '/usr/*' 'tests/*' 'third_party/*' \
-           --ignore-errors unused --output-file coverage.info
-            lcov --list coverage.info
-            genhtml coverage.info --output-directory coverage_html
+          cd build
+          lcov --gcov-tool gcov --capture --directory . --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' 'tests/*' 'third_party/*' \
+            --ignore-errors unused --output-file coverage.info
+          lcov --list coverage.info
+          genhtml coverage.info --output-directory coverage_html
+
+      # 6.5️⃣ جمع‌بندی پوشش در قالب متن
+      - name: Summarize coverage in console
+        run: |
+          gcovr --root . --object-directory build --filter src --filter include \
+            --exclude tests --xml build/coverage.xml \
+            --html-details build/coverage_gcovr/index.html --print-summary
 
 
       # 7️⃣ ذخیره گزارش به عنوان artifact

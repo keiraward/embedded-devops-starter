@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.21)
 project(embedded_devops C)
 set(CMAKE_C_STANDARD 11)
+# =====================================================
+# ✅ فعال‌سازی فلگ‌های پوشش کد (فقط در GitHub Actions)
+# =====================================================
+if(DEFINED ENV{GITHUB_ACTIONS})
+    message(STATUS "✅ Running inside GitHub Actions — enabling coverage flags")
+    add_compile_options(--coverage)
+    add_link_options(--coverage)
+endif()
 
 # ============ Firmware ============
 add_executable(firmware

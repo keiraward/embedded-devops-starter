@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 11)
 add_executable(firmware
     src/main.c
     src/app.c
+    src/hal_gpio.c
 )
 
 target_include_directories(firmware PRIVATE include)

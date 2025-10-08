@@ -2,6 +2,6 @@
 #define APP_H
 
 void app_init(void);
-int add(int a, int b);
+void led_on(void);
 
-#endif
+#endif // APP_H

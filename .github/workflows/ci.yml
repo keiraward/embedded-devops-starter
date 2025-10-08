@@ -11,29 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ مرحله اول: گرفتن سورس از مخزن
+      # 1️⃣ گرفتن سورس
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ نصب ابزارهای لازم برای بیلد و آنالیز
+      # 2️⃣ نصب ابزارهای لازم
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y ninja-build lcov clang-format gcovr
 
-      # 3️⃣ پیکربندی پروژه
+      # 3️⃣ پیکربندی CMake با فلگ‌های پوشش تست
       - name: Configure CMake project
-        run: cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DENABLE_CODE_COVERAGE=ON
+        run: |
+          cmake -S . -B build -G "Ninja" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_FLAGS="--coverage" \
+            -DCMAKE_EXE_LINKER_FLAGS="--coverage"
 
-      # 4️⃣ بیلد کردن همه تارگت‌ها
+      # 4️⃣ بیلد پروژه
       - name: Build all targets
         run: cmake --build build -j
 
-      # 5️⃣ اجرای تست‌ها (ساخت فایل‌های .gcda برای coverage)
+      # 5️⃣ اجرای تست‌ها (ایجاد فایل‌های .gcda)
       - name: Run unit tests
         run: cd build && ctest --output-on-failure
 
-      # 6️⃣ محاسبه و خروجی پوشش تست (coverage)
+      # 6️⃣ تولید گزارش پوشش تست
       - name: Generate coverage report
         run: |
           cd build
@@ -42,7 +46,7 @@ jobs:
           lcov --list coverage.info
           genhtml coverage.info --output-directory coverage_html
 
-      # 7️⃣ ذخیره گزارش پوشش تست به‌عنوان Artifact
+      # 7️⃣ ذخیره گزارش به عنوان artifact
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
@@ -51,7 +55,7 @@ jobs:
             build/coverage_html
             build/coverage.info
 
-      # 8️⃣ بررسی فرمت کدها با clang-format
+      # 8️⃣ بررسی فرمت کد
       - name: Check code formatting
         run: |
           clang-format --version

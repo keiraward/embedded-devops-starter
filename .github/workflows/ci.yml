@@ -48,11 +48,13 @@ jobs:
           genhtml coverage.info --output-directory coverage_html
 
       # 6.5️⃣ جمع‌بندی پوشش در قالب متن
+            # 6.5️⃣ جمع‌بندی پوشش در قالب متن
       - name: Summarize coverage in console
         run: |
+          mkdir -p build/coverage_gcovr
           gcovr --root . --object-directory build --filter src --filter include \
-            --exclude tests --xml build/coverage.xml \
-            --html-details build/coverage_gcovr/index.html --print-summary
+          --exclude tests --xml build/coverage.xml \
+          --html-details build/coverage_gcovr/index.html --print-summary
 
 
       # 7️⃣ ذخیره گزارش به عنوان artifact

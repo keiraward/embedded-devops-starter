@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-void HAL_GPIO_WritePin(int port, int pin, int value)
-{
+void HAL_GPIO_WritePin(int port, int pin, int value) {
     (void)port;
     (void)pin;
     (void)value;

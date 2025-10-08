@@ -9,4 +9,4 @@
 
 void HAL_GPIO_WritePin(int port, int pin, int value);
 
-#endif // HAL_GPIO_H
+#endif  // HAL_GPIO_H

@@ -4,4 +4,4 @@
 void app_init(void);
 void led_on(void);
 
-#endif // APP_H
+#endif  // APP_H

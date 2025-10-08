@@ -4,7 +4,7 @@
 
 // تعریف‌های جعلی فقط برای تست
 #define GPIO_PORT_LED 1
-#define GPIO_PIN_LED  13
+#define GPIO_PIN_LED 13
 
 #define GPIO_PIN_RESET 0
 #define GPIO_PIN_SET 1

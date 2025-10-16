@@ -20,20 +20,20 @@ if(CMAKE_C_COMPILER MATCHES "arm-none-eabi")
 endif()
 
 # ============ Firmware (ARM) ============
-add_executable(firmware.elf
-  startup/startup_stm32f401xc.s
-  src/main.c
-  src/app.c
-  src/hal_gpio.c
-  src/syscalls.c
-  src/system_stm32f4xx.c
-)
-
-# مسیر هدرهای خودت
-target_include_directories(firmware.elf PRIVATE include)
-
-# فلگ‌های مخصوص ARM فقط وقتی واقعاً با ARM می‌سازیم
 if(IS_ARM)
+  add_executable(firmware.elf
+    startup/startup_stm32f401xc.s
+    src/main.c
+    src/app.c
+    src/hal_gpio.c
+    src/syscalls.c
+    src/system_stm32f4xx.c
+  )
+
+  # مسیر هدرهای خودت
+  target_include_directories(firmware.elf PRIVATE include)
+
+  # فلگ‌های مخصوص ARM فقط وقتی واقعاً با ARM می‌سازیم
   target_compile_options(firmware.elf PRIVATE
     -mcpu=cortex-m4 -mthumb
     -ffunction-sections -fdata-sections
@@ -41,13 +41,13 @@ if(IS_ARM)
   )
 
   # لینک با اسکریپت، بدون استارت‌فایل‌های میزبان، و جمع‌کردن سکشن‌های بدون استفاده
-target_link_options(firmware.elf PRIVATE
-  -T${CMAKE_SOURCE_DIR}/STM32F401_FLASH.ld
-  -Wl,--gc-sections
-  --specs=nano.specs
-  --specs=nosys.specs
-  -nostartfiles
-)
+  target_link_options(firmware.elf PRIVATE
+    -T${CMAKE_SOURCE_DIR}/STM32F401_FLASH.ld
+    -Wl,--gc-sections
+    --specs=nano.specs
+    --specs=nosys.specs
+    -nostartfiles
+  )
 
   # ساخت .bin و چاپ سایز
   add_custom_command(TARGET firmware.elf POST_BUILD

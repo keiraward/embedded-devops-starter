@@ -1,6 +1,7 @@
-#include <sys/stat.h>
-#include <stdint.h>
 #include <errno.h>
+#include <stdint.h>
+#include <sys/stat.h>
+#include <stddef.h>
 
 /* Heap boundaries defined by linker script */
 extern unsigned char _end;       /* end of bss */

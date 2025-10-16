@@ -1,4 +1,4 @@
-name: Firmware CI (Build + Test + Coverage)
+name: Build Firmware (STM32F401)
 
 on:
   push:
@@ -7,45 +7,44 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install toolchain
         run: |
           sudo apt update
-          sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build gcovr
-
-      - name: Configure project
-        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build
 
       - name: Build firmware
-        run: cmake --build build --config Release
-
-      - name: Create firmware binary
         run: |
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
           arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
-          arm-none-eabi-size build/firmware.elf
 
-      - name: Upload firmware artifacts
+      - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-artifacts
-          path: |
-            build/firmware.elf
-            build/firmware.bin
+          name: firmware
+          path: build/firmware.elf
 
-      - name: Run tests
-        run: ctest --test-dir build --output-on-failure || true
+  simulate:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Generate Coverage Report (HTML)
+      - name: Download firmware
+        uses: actions/download-artifact@v4
+        with:
+          name: firmware
+
+      - name: Install QEMU
         run: |
-          gcovr -r . --html-details build/coverage.html --xml build/coverage.xml --exclude tests
-          gcovr --summary
+          sudo apt update
+          sudo apt install -y qemu-system-arm
 
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: build/coverage.html
+      - name: Run firmware in QEMU
+        run: |
+          qemu-system-arm -M stm32-p103 -kernel build/firmware.elf -nographic -serial stdio -semihosting

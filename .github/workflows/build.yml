@@ -40,10 +40,13 @@ jobs:
         with:
           name: firmware
 
-      - name: Install QEMU
+      - name: Install QEMU (ARM support)
         run: |
           sudo apt update
-          sudo apt install -y qemu-system-arm
+          sudo apt install -y qemu-system qemu-user-static
+
+      - name: Verify QEMU installation
+        run: qemu-system-arm --version
 
       - name: Run firmware in QEMU
         run: |

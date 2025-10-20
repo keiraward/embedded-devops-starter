@@ -18,10 +18,11 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
 
       - name: Configure
-        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=toolchain-arm-gcc.cmake
+        run: cmake -S . -B build \
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/toolchain-arm-gcc.cmake
 
       - name: Build firmware
-        run: cmake --build build --parallel
+        run: cmake --build build --target firmware.elf --parallel
 
       - name: Convert to .bin
         run: arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
@@ -49,4 +50,4 @@ jobs:
           path: build
 
       - name: Run firmware in QEMU
-        run: qemu-system-arm -M stm32-p103 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+        run: qemu-system-arm -M stm32f4discovery -kernel build/firmware.elf -nographic -serial stdio -semihosting

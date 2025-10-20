@@ -22,15 +22,19 @@ jobs:
 
       - name: Build firmware
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/toolchain-arm-gcc.cmake
+          cmake --build build --target firmware.elf
           arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: build/firmware.elf
+          path: |
+            build/firmware.elf
+            build/firmware.bin
 
   simulate:
     runs-on: ubuntu-latest
@@ -43,6 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: firmware
+          path: build
 
       - name: Install QEMU (ARM version)
         run: |
@@ -54,4 +59,4 @@ jobs:
 
       - name: Run firmware in QEMU
         run: |
-          qemu-system-arm -M stm32f4 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+          qemu-system-arm -M stm32f4discovery -kernel build/firmware.elf -nographic -serial stdio -semihosting

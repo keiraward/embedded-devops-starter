@@ -1,4 +1,4 @@
-name: Build and Simulate (STM32F401)
+name: Build Firmware (STM32F401)
 
 on:
   push:
@@ -11,15 +11,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install ARM toolchain
+      - name: Install toolchain
         run: |
           sudo apt update
           sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build
 
-      - name: Build firmware only
+      - name: Build firmware
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
-          cmake --build build --target firmware.elf  # هدف 'firmware.elf' را به‌صورت واضح مشخص می‌کنیم
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
           arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
 
       - name: Upload firmware artifact
@@ -27,7 +27,6 @@ jobs:
         with:
           name: firmware
           path: build/firmware.elf
-<<<<<<< HEAD
 
   simulate:
     runs-on: ubuntu-latest

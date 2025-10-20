@@ -16,5 +16,5 @@ int main(void)
     /* 4) روشن کردن LED روی PD14 */
     GPIOD_BSRR = (1U << PD14);
 
-    while (1) { __asm volatile ("nop"); }
+   // while (1) { __asm volatile ("nop"); }
 }

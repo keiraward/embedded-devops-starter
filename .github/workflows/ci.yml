@@ -50,4 +50,4 @@ jobs:
           path: build
 
       - name: Run firmware in QEMU
-        run: qemu-system-arm -machine netduinoplus2 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+        run: qemu-system-arm -M stm32f4discovery -kernel build/firmware.elf -nographic -serial stdio -semihosting

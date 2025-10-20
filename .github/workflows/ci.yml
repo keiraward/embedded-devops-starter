@@ -18,10 +18,11 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
 
       - name: Configure
-        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=toolchain-arm-gcc.cmake
+        run: cmake -S . -B build \
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/toolchain-arm-gcc.cmake
 
       - name: Build firmware
-        run: cmake --build build --parallel
+        run: cmake --build build --target firmware.elf --parallel
 
       - name: Convert to .bin
         run: arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
@@ -38,10 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Install QEMU (ARM)
+      - name: Install QEMU with STM32F4 support
+        env:
+          QEMU_VERSION: 7.2.0-1
         run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-system-arm
+          ARCHIVE="xpack-qemu-arm-${QEMU_VERSION}-linux-x64.tar.gz"
+          wget -q "https://github.com/xpack-dev-tools/qemu-arm-xpack/releases/download/v${QEMU_VERSION}/${ARCHIVE}"
+          tar -xzf "${ARCHIVE}"
+          echo "${PWD}/xpack-qemu-arm-${QEMU_VERSION}/bin" >> "$GITHUB_PATH"
 
       - uses: actions/download-artifact@v4
         with:
@@ -49,4 +54,11 @@ jobs:
           path: build
 
       - name: Run firmware in QEMU
-        run: qemu-system-arm -M stm32-p103 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+        run: |
+          qemu-system-gnuarmeclipse \
+            --board STM32F4-Discovery \
+            --image build/firmware.elf \
+            --semihosting-config enable=on,target=native \
+            --nographic \
+            --monitor null \
+            --serial stdio

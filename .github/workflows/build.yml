@@ -22,15 +22,19 @@ jobs:
 
       - name: Build firmware
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/toolchain-arm-gcc.cmake
+          cmake --build build --target firmware.elf
           arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: build/firmware.elf
+          path: |
+            build/firmware.elf
+            build/firmware.bin
 
   simulate:
     runs-on: ubuntu-latest
@@ -43,15 +47,26 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: firmware
+          path: build
 
-      - name: Install QEMU (ARM version)
+      - name: Install QEMU with STM32F4 support
+        env:
+          QEMU_VERSION: 7.2.0-1
         run: |
-          sudo apt update
-          sudo apt install -y qemu-system-arm
+          ARCHIVE="xpack-qemu-arm-${QEMU_VERSION}-linux-x64.tar.gz"
+          wget -q "https://github.com/xpack-dev-tools/qemu-arm-xpack/releases/download/v${QEMU_VERSION}/${ARCHIVE}"
+          tar -xzf "${ARCHIVE}"
+          echo "${PWD}/xpack-qemu-arm-${QEMU_VERSION}/bin" >> "$GITHUB_PATH"
 
       - name: Verify QEMU installation
-        run: qemu-system-arm --version
+        run: qemu-system-gnuarmeclipse --version
 
       - name: Run firmware in QEMU
         run: |
-          qemu-system-arm -M stm32f4 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+          qemu-system-gnuarmeclipse \
+            --board STM32F4-Discovery \
+            --image build/firmware.elf \
+            --semihosting-config enable=on,target=native \
+            --nographic \
+            --monitor null \
+            --serial stdio

@@ -16,10 +16,10 @@ jobs:
           sudo apt update
           sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build
 
-      - name: Build firmware
+      - name: Build firmware only
         run: |
-          cmake -B build -G Ninja
-          cmake --build build
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
+          cmake --build build --target firmware.elf
           arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
 
       - name: Upload firmware artifact

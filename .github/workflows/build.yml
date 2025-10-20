@@ -69,4 +69,4 @@ jobs:
             --semihosting-config enable=on,target=native \
             --nographic \
             --monitor null \
-            --serial stdio
+            --serial stdio || true

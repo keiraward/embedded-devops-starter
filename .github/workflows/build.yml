@@ -63,7 +63,7 @@ jobs:
 
       - name: Run firmware in QEMU
         run: |
-          qemu-system-gnuarmeclipse \
+          timeout 5s qemu-system-gnuarmeclipse \
             --board STM32F4-Discovery \
             --image build/firmware.elf \
             --semihosting-config enable=on,target=native \

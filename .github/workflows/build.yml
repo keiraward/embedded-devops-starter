@@ -2,7 +2,11 @@ name: Build Firmware (STM32F401)
 
 on:
   push:
+    branches:
+      - main  # only on push to main branch
   pull_request:
+    branches:
+      - main  # only for pull requests targeting main branch
 
 jobs:
   build:
@@ -50,4 +54,4 @@ jobs:
 
       - name: Run firmware in QEMU
         run: |
-          qemu-system-arm -M netduinoplus2 -kernel build/firmware.elf -nographic -serial stdio || true
+          qemu-system-arm -M stm32f4 -kernel build/firmware.elf -nographic -serial stdio -semihosting

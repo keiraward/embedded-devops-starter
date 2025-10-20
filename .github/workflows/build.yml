@@ -19,7 +19,7 @@ jobs:
       - name: Build firmware only
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
-          cmake --build build --target firmware.elf
+          cmake --build build --target firmware.elf  # هدف 'firmware.elf' را به‌صورت واضح مشخص می‌کنیم
           arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
 
       - name: Upload firmware artifact
@@ -27,6 +27,7 @@ jobs:
         with:
           name: firmware
           path: build/firmware.elf
+<<<<<<< HEAD
 
   simulate:
     runs-on: ubuntu-latest
@@ -52,3 +53,5 @@ jobs:
       - name: Run firmware in QEMU
         run: |
           qemu-system-arm -M stm32-p103 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+=======
+>>>>>>> 7feca73 (fix build: disable tests in CI)

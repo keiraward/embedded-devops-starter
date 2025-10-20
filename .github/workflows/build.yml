@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install toolchain
+      - name: Install ARM Toolchain
         run: |
           sudo apt update
           sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build
@@ -35,10 +35,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download firmware
+      - name: Download firmware artifact
         uses: actions/download-artifact@v4
         with:
           name: firmware
+          path: ./artifact
 
       - name: Install QEMU (ARM support)
         run: |
@@ -50,4 +51,4 @@ jobs:
 
       - name: Run firmware in QEMU
         run: |
-          qemu-system-arm -M stm32-p103 -kernel build/firmware.elf -nographic -serial stdio -semihosting
+          qemu-system-arm -M stm32-p103 -kernel ./artifact/firmware.elf -nographic -serial stdio -semihosting

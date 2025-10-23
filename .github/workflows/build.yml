@@ -31,7 +31,12 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/toolchain-arm-gcc.cmake
 
       - name: Build firmware
-        run: cmake --build build --target firmware.elf --parallel
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/toolchain-arm-gcc.cmake
+          cmake --build build --target firmware.elf
+          arm-none-eabi-objcopy -O binary build/firmware.elf build/firmware.bin
 
       - name: Run unit tests
         run: |

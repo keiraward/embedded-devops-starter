@@ -3,10 +3,10 @@ name: Build Firmware (STM32F401)
 on:
   push:
     branches:
-      - main  # only on push to main branch
+      - main  # فقط در صورت push به برنچ main اجرا می‌شود
   pull_request:
     branches:
-      - main  # only for pull requests targeting main branch
+      - main  # فقط برای pull request‌هایی که هدف‌شون برنچ main است
 
 jobs:
   build:
@@ -70,3 +70,4 @@ jobs:
             --nographic \
             --monitor null \
             --serial stdio || true
+
